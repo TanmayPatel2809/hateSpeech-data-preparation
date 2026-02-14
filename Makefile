@@ -26,7 +26,7 @@ guard-%:
 	@#$(or ${$*}, $(error $* is not set))
 
 ## Call entrypoint
-entrypoint: up
+process-data: up
 	$(DOCKER_COMPOSE_EXEC) python ./hateSpeech/prepare_dataset.py
 
 ## Starts jupyter lab

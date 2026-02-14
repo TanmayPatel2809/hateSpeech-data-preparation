@@ -12,11 +12,12 @@ pydantic = "~=1.10.7"
 pandas = "~=2.0"
 nltk = "~=3.8"
 symspellpy = "~=6.7"
-fsspec = {version = "~=2023.5", extras = ["gcs"]}
-gcsfs = "~=2023.5"
+fsspec = {version = ">=2024.2.0", extras = ["gcs"]}
+gcsfs = ">=2024.2.0"
 google-cloud-secret-manager = "~=2.16"
 fastparquet = "~=2023.4"
-dvc = {version= "~=3.0" , extras = ["gdrive", "gs"]}
+dvc = {version= "~=3.48" , extras = ["gdrive", "gs"]}
+pygit2 = "~=1.14"
 dask = {version = "~=2023.5", extras = ["complete"]}
 distributed = "~=2023.5"
 dask-cloudprovider = {version = "2022.10", extras=["gcp"]}
@@ -55,7 +56,7 @@ default_section = "THIRDPARTY"
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 show_error_codes = true
 ignore_missing_imports = true
 install_types = true

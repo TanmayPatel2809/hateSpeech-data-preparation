@@ -1,2 +1,2 @@
-# cybulde-project-template
-A simple template for Cybulde project
+# hateSpeech-project-template
+A simple template for hateSpeech project

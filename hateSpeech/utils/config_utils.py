@@ -30,6 +30,6 @@ def setup_config() -> None:
 
 
 def setup_logger() -> None:
-    with open("./cybulde/configs/hydra/job_logging/custom.yaml", "r") as stream:
+    with open("./hateSpeech/configs/hydra/job_logging/custom.yaml", "r") as stream:
         config = yaml.load(stream, Loader=yaml.FullLoader)
     logging.config.dictConfig(config)
