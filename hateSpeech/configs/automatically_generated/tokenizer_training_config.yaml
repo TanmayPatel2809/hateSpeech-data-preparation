@@ -1,0 +1,40 @@
+infrastructure:
+  project_id: gen-lang-client-0958213549
+  zone: europe-west4-b
+  network: default
+data_parquet_path: gs://my_bucket_2003/hate_speech_data/processed/rebalanced_splits/train.parquet
+text_column_name: cleaned_text
+docker_image_name: europe-west4-docker.pkg.dev/gen-lang-client-0958213549/hatespeech/hatespeech-data-processing
+docker_image_tag: 48ef0f25-1c94-4db2-89d4-80e0a103a392
+tokenizer:
+  _target_: hateSpeech.tokenization.tokenizers.HuggingFaceTokenizer
+  pre_tokenizer:
+    _target_: tokenizers.pre_tokenizers.Whitespace
+  model:
+    _target_: tokenizers.models.BPE
+    vocab: null
+    merges: null
+    cache_capacity: 10000
+    dropout: null
+    unk_token: '[UNK]'
+    fuse_unk: false
+  trainer:
+    _target_: tokenizers.trainers.BpeTrainer
+    vocab_size: 30000
+    show_progress: true
+    min_frequency: 0
+    special_tokens:
+    - '[UNK]'
+    - '[CLS]'
+    - '[SEP]'
+    - '[PAD]'
+    - '[MASK]'
+    initial_alphabet: []
+  normalizer: null
+  decoder: null
+  post_processor: null
+  unk_token: '[UNK]'
+  cls_token: '[CLS]'
+  sep_token: '[SEP]'
+  pad_token: '[PAD]'
+  mask_token: '[MASK]'

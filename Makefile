@@ -13,11 +13,15 @@ else
 endif
 
 SERVICE_NAME = app
-CONTAINER_NAME = hateSpeech-data-preparation-container
+CONTAINER_NAME = hatespeech-data-processing-container
 
 DIRS_TO_VALIDATE = hateSpeech
 DOCKER_COMPOSE_RUN = $(DOCKER_COMPOSE_COMMAND) run --rm $(SERVICE_NAME)
 DOCKER_COMPOSE_EXEC = $(DOCKER_COMPOSE_COMMAND) exec $(SERVICE_NAME)
+
+LOCAL_DOCKER_IMAGE_NAME = hatespeech-data-processing
+GCP_DOCKER_IMAGE_NAME = europe-west4-docker.pkg.dev/gen-lang-client-0958213549/hatespeech/hatespeech-data-processing
+GCP_DOCKER_IMAGE_TAG := $(shell uuidgen)
 
 export
 
@@ -25,9 +29,35 @@ export
 guard-%:
 	@#$(or ${$*}, $(error $* is not set))
 
+
+generate-final-config: up guard-CONFIG_NAME
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/generate_final_config.py --config-name $${CONFIG_NAME} --overrides docker_image_name=$(GCP_DOCKER_IMAGE_NAME) docker_image_tag=$(GCP_DOCKER_IMAGE_TAG) $${OVERRIDES}
+
+generate-final-data-processing-config: up
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/generate_final_config.py --config-name data_processing_config --overrides docker_image_name=$(GCP_DOCKER_IMAGE_NAME) docker_image_tag=$(GCP_DOCKER_IMAGE_TAG) $${OVERRIDES}
+
+generate-final-tokenizer-training-config: up
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/generate_final_config.py --config-name tokenizer_training_config --overrides docker_image_name=$(GCP_DOCKER_IMAGE_NAME) docker_image_tag=$(GCP_DOCKER_IMAGE_TAG) $${OVERRIDES}
+
+
 ## Call entrypoint
-process-data: up
-	$(DOCKER_COMPOSE_EXEC) python ./hateSpeech/prepare_dataset.py
+process-data: generate-final-data-processing-config push
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/process_data.py
+
+train-tokenizer: generate-final-tokenizer-training-config push
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/train_tokenizer.py
+
+
+local-process-data: generate-final-data-processing-config
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/process_data.py
+
+local-train-tokenizer: generate-final-tokenizer-training-config
+	$(DOCKER_COMPOSE_EXEC) python -W ignore ./hateSpeech/train_tokenizer.py
+
+push: build
+	gcloud auth configure-docker --quiet europe-west4-docker.pkg.dev
+	docker tag ${LOCAL_DOCKER_IMAGE_NAME}:latest "${GCP_DOCKER_IMAGE_NAME}:${GCP_DOCKER_IMAGE_TAG}"
+	docker push "${GCP_DOCKER_IMAGE_NAME}:${GCP_DOCKER_IMAGE_TAG}"
 
 ## Starts jupyter lab
 notebook: up

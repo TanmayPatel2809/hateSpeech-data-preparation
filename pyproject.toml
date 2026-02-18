@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Tanmay Patel <tanmaykpatel03@gmail.com>"]
 readme = "README.md"
+packages = [{include = "hateSpeech"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
@@ -16,7 +17,7 @@ fsspec = {version = ">=2024.2.0", extras = ["gcs"]}
 gcsfs = ">=2024.2.0"
 google-cloud-secret-manager = "~=2.16"
 fastparquet = "~=2023.4"
-dvc = {version= "~=3.48" , extras = ["gdrive", "gs"]}
+dvc = {version= "~=3.48",  extras = ["gdrive", "gs"]}
 pygit2 = "~=1.14"
 dask = {version = "~=2023.5", extras = ["complete"]}
 distributed = "~=2023.5"
@@ -25,6 +26,13 @@ dask-ml = "~=2023.3"
 bokeh = "~=3.1"
 fastapi = "~=0.104"
 uvicorn = {version = "~=0.24", extras=["standard"]}
+setuptools = "==65.5.0"
+scikit-learn = "~=1.2.0"
+numpy = "~=1.24.0"
+cryptography = ">=41.0.0,<43.0.0"
+pyOpenSSL = ">=23.2.0,<24.0.0"
+tokenizers = "~=0.13"
+transformers = "~=4.30.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "~=7.3"

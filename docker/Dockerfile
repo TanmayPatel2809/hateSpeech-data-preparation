@@ -37,19 +37,20 @@ WORKDIR /app
 
 RUN poetry config virtualenvs.create false \
     && python3.10 -m venv ${VIRTUAL_ENV} \
-    && pip install --upgrade pip setuptools \
+    && pip install --upgrade pip "setuptools==65.5.0" \
     && poetry install && cp poetry.lock ${BUILD_POETRY_LOCK} \
     && rm -rf ${HOME}/.cache/*
 
 USER root
 COPY ./docker/scripts/* /
 RUN chown -R ${USER_NAME} /*.sh && chmod +x /*.sh
+RUN chown -R ${USER_NAME} ${HOME}/.local
 USER ${USER_NAME}
 
 RUN git config --global user.name "Tanmay Patel" \
     && git config --global user.email "tanmaykpatel03@gmail.com"
 
-RUN python3.10 -m nltk.downloader stopwords && python3.10 -m nltk.downloader punkt
+RUN python3.10 -m nltk.downloader stopwords && python3.10 -m nltk.downloader punkt && python3.10 -m nltk.downloader punkt_tab
 
 COPY . /app/
 CMD ["/startup-script.sh"]

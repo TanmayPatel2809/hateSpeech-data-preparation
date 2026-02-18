@@ -1,0 +1,97 @@
+version: v5
+data_local_save_dir: ./data/raw
+dvc_remote_repo: https://github.com/TanmayPatel2809/hateSpeech-data.git
+dvc_data_folder: data/raw
+github_user_name: TanmayPatel2809
+github_access_token_secret_id: hateSpeech-data-github-access-token
+infrastructure:
+  project_id: gen-lang-client-0958213549
+  zone: europe-west4-b
+  network: default
+dataset_reader_manager:
+  _target_: hateSpeech.data_processing.dataset_readers.DatasetReaderManager
+  dataset_readers:
+    ghc:
+      _target_: hateSpeech.data_processing.dataset_readers.GHCDatasetReader
+      dataset_dir: ./data/raw/ghc
+      dataset_name: ghc
+      gcp_project_id: gen-lang-client-0958213549
+      gcp_github_access_token_secret_id: hateSpeech-data-github-access-token
+      dvc_remote_repo: https://github.com/TanmayPatel2809/hateSpeech-data.git
+      github_user_name: TanmayPatel2809
+      version: v5
+      dev_split_ratio: 0.3
+    jtc:
+      _target_: hateSpeech.data_processing.dataset_readers.JigsawToxicCommentsDatasetReader
+      dataset_dir: ./data/raw/jigsaw-toxic-comments
+      dataset_name: jtc
+      gcp_project_id: gen-lang-client-0958213549
+      gcp_github_access_token_secret_id: hateSpeech-data-github-access-token
+      dvc_remote_repo: https://github.com/TanmayPatel2809/hateSpeech-data.git
+      github_user_name: TanmayPatel2809
+      version: v5
+      dev_split_ratio: 0.03
+    twitter:
+      _target_: hateSpeech.data_processing.dataset_readers.TwitterDatasetReader
+      dataset_dir: ./data/raw/twitter
+      dataset_name: twitter
+      gcp_project_id: gen-lang-client-0958213549
+      gcp_github_access_token_secret_id: hateSpeech-data-github-access-token
+      dvc_remote_repo: https://github.com/TanmayPatel2809/hateSpeech-data.git
+      github_user_name: TanmayPatel2809
+      version: v5
+      dev_split_ratio: 0.125
+      test_split_ratio: 0.1
+  repartition: true
+  available_memory: null
+dataset_cleaner_manager:
+  _target_: hateSpeech.data_processing.data_cleaners.DatasetCleanerManager
+  dataset_cleaners:
+    stopwords:
+      _target_: hateSpeech.data_processing.data_cleaners.StopwordsDatasetCleaner
+    to_lower_case:
+      _target_: hateSpeech.data_processing.data_cleaners.ToLowerCaseDatasetCleaner
+    url:
+      _target_: hateSpeech.data_processing.data_cleaners.URLDatasetCleaner
+    punctuation:
+      _target_: hateSpeech.data_processing.data_cleaners.PunctuationDatasetCleaner
+      punctuation: '!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~'
+    non_letter:
+      _target_: hateSpeech.data_processing.data_cleaners.NonLetterDatasetCleaner
+    new_line:
+      _target_: hateSpeech.data_processing.data_cleaners.NewLineCharacterDatasetCleaner
+    non_ascii:
+      _target_: hateSpeech.data_processing.data_cleaners.NonASCIIDatasetCleaner
+    reference:
+      _target_: hateSpeech.data_processing.data_cleaners.ReferenceToAccountDatasetCleaner
+    re_tweet:
+      _target_: hateSpeech.data_processing.data_cleaners.ReTweetDatasetCleaner
+    spell_correction:
+      _target_: hateSpeech.data_processing.data_cleaners.SpellCorrectionDatasetCleaner
+      spell_correction_model:
+        _target_: hateSpeech.utils.utils.SpellCorrectionModel
+        max_dictionary_edit_distance: 2
+        prefix_length: 7
+        count_threshold: 1
+dask_cluster:
+  _target_: dask.distributed.LocalCluster
+  n_workers: 8
+  memory_limit: auto
+  processes: true
+  threads_per_worker: 1
+  scheduler_port: 8786
+  silence_logs: 30
+  host: null
+  dashboard_address: :8787
+  asynchronous: false
+  blocked_handlers: null
+  service_kwargs: null
+  security: null
+  protocol: null
+  interface: null
+  worker_class: null
+processed_data_save_dir: gs://my_bucket_2003/hate_speech_data/processed/rebalanced_splits
+run_tag: rebalanced_splits
+docker_image_name: europe-west4-docker.pkg.dev/gen-lang-client-0958213549/hatespeech/hatespeech-data-processing
+docker_image_tag: 5f14e780-3592-4b25-a248-917af86539e9
+min_nrof_words: 2

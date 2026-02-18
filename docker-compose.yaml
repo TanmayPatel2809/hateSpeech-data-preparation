@@ -1,12 +1,12 @@
-version: "3.8"
-
 services:
   app:
     user: "${USER_ID:-1000}"
     hostname: "${HOST_NAME:-tanmay}"
-    image: hatespeech-data-preparation
+    image: hatespeech-data-processing
     platform: linux/amd64
-    container_name: hateSpeech-data-preparation-container
+    container_name: hatespeech-data-processing-container
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=./creds/gen-lang-client-0958213549-3c0d2210eba7.json
     build:
       context: .
       dockerfile: ./docker/Dockerfile
@@ -17,7 +17,7 @@ services:
       - ./:/app/
       - ~/.config/gcloud/:/home/${USER_NAME:-tanmay}/.config/gcloud
     ports:
-      - 8080:8080
+      - 8888:8888
 
     ipc: host
     init: true
