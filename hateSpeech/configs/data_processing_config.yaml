@@ -13,5 +13,5 @@ hydra:
   run:
     dir: .
 
-version: v5
+version: v3
 processed_data_save_dir: gs://my_bucket_2003/hate_speech_data/processed/${run_tag}
